@@ -16,13 +16,17 @@ let gasChart;
 
 async function fetchAvaxPrice() {
   try {
-    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2&vs_currencies=usd");
+    const url = "https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2&vs_currencies=usd";
+    const proxy = "https://api.allorigins.win/raw?url=";
+
+    const res = await fetch(proxy + encodeURIComponent(url));
     const data = await res.json();
+
     const price = data["avalanche-2"]?.usd;
-    priceEl.textContent = price !== undefined ? `$${price}` : "Price data not available";
+    priceEl.textContent = price ? `$${price}` : "Price unavailable";
   } catch (err) {
-    priceEl.textContent = "Error fetching price";
-    console.error(err);
+    priceEl.textContent = "Price fetch failed";
+    console.error("Price error:", err);
   }
 }
 
@@ -62,7 +66,7 @@ async function fetchGasUsage() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          indexAxis: isMobile() ? 'y' : 'x', 
+          indexAxis: isMobile() ? 'y' : 'x',
           plugins: {
             legend: {
               labels: { color: '#fff' }
@@ -99,6 +103,6 @@ fetchGasUsage();
 setInterval(() => {
   fetchAvaxPrice();
   fetchGasUsage();
-}, 15000);
+}, 60000);
 
 document.getElementById("year").textContent = new Date().getFullYear();
